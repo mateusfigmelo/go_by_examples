@@ -43,9 +43,18 @@ func bufferedIO() {
 	defer file.Close()
 
 	writer := bufio.NewWriter(file)
-	writer.WriteString("Line 1: Buffered writing\n")
-	writer.WriteString("Line 2: More buffered content\n")
-	writer.Flush()
+	if _, err := writer.WriteString("Line 1: Buffered writing\n"); err != nil {
+		fmt.Printf("        Error writing to file: %v\n", err)
+		return
+	}
+	if _, err := writer.WriteString("Line 2: More buffered content\n"); err != nil {
+		fmt.Printf("        Error writing to file: %v\n", err)
+		return
+	}
+	if err := writer.Flush(); err != nil {
+		fmt.Printf("        Error flushing buffer: %v\n", err)
+		return
+	}
 	fmt.Println("        Buffered write complete")
 
 	// Reading with a buffer

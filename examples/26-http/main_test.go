@@ -135,7 +135,11 @@ func TestClientOperations(t *testing.T) {
 		switch r.URL.Path {
 		case "/test":
 			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"message":"test response"}`))
+			_, err := w.Write([]byte(`{"message":"test response"}`))
+			if err != nil {
+				t.Logf("Error writing response: %v", err)
+				http.Error(w, "Failed to write response", http.StatusInternalServerError)
+			}
 		case "/error":
 			http.Error(w, "test error", http.StatusInternalServerError)
 		}

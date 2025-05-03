@@ -40,8 +40,14 @@ func hashExamples() {
 
 	// Hash streaming example
 	streamHash := sha256.New()
-	io.WriteString(streamHash, "Hello, ")
-	io.WriteString(streamHash, "World!")
+	if _, err := io.WriteString(streamHash, "Hello, "); err != nil {
+		fmt.Printf("Error writing to hash: %v\n", err)
+		return
+	}
+	if _, err := io.WriteString(streamHash, "World!"); err != nil {
+		fmt.Printf("Error writing to hash: %v\n", err)
+		return
+	}
 	fmt.Printf("        Streamed SHA256: %x\n", streamHash.Sum(nil))
 }
 
@@ -83,7 +89,10 @@ func hashingPatterns() {
 	hash := sha256.New()
 	items := []string{"item1", "item2", "item3"}
 	for _, item := range items {
-		io.WriteString(hash, item)
+		if _, err := io.WriteString(hash, item); err != nil {
+			fmt.Printf("Error writing to hash: %v\n", err)
+			return
+		}
 	}
 	fmt.Printf("        Combined hash: %x\n", hash.Sum(nil))
 

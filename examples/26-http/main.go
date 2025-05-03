@@ -78,7 +78,11 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 // handleHealth handles the health check endpoint
 func handleHealth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"status": "healthy"})
+	if err := json.NewEncoder(w).Encode(map[string]string{"status": "healthy"}); err != nil {
+		log.Printf("Error encoding health response: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 }
 
 // handleUsers handles CRUD operations for users
@@ -113,7 +117,11 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "User not found", http.StatusNotFound)
 				return
 			}
-			json.NewEncoder(w).Encode(user)
+			if err := json.NewEncoder(w).Encode(user); err != nil {
+				log.Printf("Error encoding single user response: %v", err)
+				http.Error(w, "Internal server error", http.StatusInternalServerError)
+				return
+			}
 		} else {
 			// Get all users
 			mu.RLock()
@@ -122,7 +130,11 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 				users = append(users, user)
 			}
 			mu.RUnlock()
-			json.NewEncoder(w).Encode(users)
+			if err := json.NewEncoder(w).Encode(users); err != nil {
+				log.Printf("Error encoding all users response: %v", err)
+				http.Error(w, "Internal server error", http.StatusInternalServerError)
+				return
+			}
 		}
 
 	case http.MethodPost:
@@ -139,7 +151,10 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 		mu.Unlock()
 
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(user)
+		if err := json.NewEncoder(w).Encode(user); err != nil {
+			log.Printf("Error encoding created user response: %v", err)
+			return
+		}
 
 	case http.MethodPut:
 		if userID == 0 {
@@ -164,7 +179,11 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 		userStore[userID] = user
 		mu.Unlock()
 
-		json.NewEncoder(w).Encode(user)
+		if err := json.NewEncoder(w).Encode(user); err != nil {
+			log.Printf("Error encoding updated user response: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
 
 	case http.MethodDelete:
 		if userID == 0 {
@@ -182,7 +201,11 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 		delete(userStore, userID)
 		mu.Unlock()
 
-		json.NewEncoder(w).Encode(map[string]string{"message": "User deleted successfully"})
+		if err := json.NewEncoder(w).Encode(map[string]string{"message": "User deleted successfully"}); err != nil {
+			log.Printf("Error encoding delete response: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
 
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

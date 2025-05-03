@@ -114,7 +114,11 @@ func advancedJSON() {
 	}
 
 	fmt.Println("\n        Custom Marshaling:")
-	jsonData, _ := json.MarshalIndent(event, "", "    ")
+	jsonData, err := json.MarshalIndent(event, "", "    ")
+	if err != nil {
+		fmt.Printf("        Error marshaling JSON: %v\n", err)
+		return
+	}
 	fmt.Printf("        %s\n", jsonData)
 }
 

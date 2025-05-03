@@ -38,7 +38,10 @@ func BenchmarkCreateUser(b *testing.B) {
 		Name:  "Test User",
 		Email: "test@example.com",
 	}
-	userData, _ := json.Marshal(user)
+	userData, err := json.Marshal(user)
+	if err != nil {
+		b.Fatalf("Failed to marshal user data: %v", err)
+	}
 
 	// Reset timer before the loop
 	b.ResetTimer()
@@ -122,7 +125,10 @@ func BenchmarkUpdateUser(b *testing.B) {
 		Name:  "Updated User",
 		Email: "updated@example.com",
 	}
-	userData, _ := json.Marshal(updateUser)
+	userData, err := json.Marshal(updateUser)
+	if err != nil {
+		b.Fatalf("Failed to marshal update user data: %v", err)
+	}
 
 	// Reset timer before the loop
 	b.ResetTimer()

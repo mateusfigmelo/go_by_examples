@@ -22,7 +22,10 @@ func TestHelloWorld(t *testing.T) {
 
 	// Read captured output
 	var buf bytes.Buffer
-	buf.ReadFrom(r)
+	_, err := buf.ReadFrom(r)
+	if err != nil {
+		t.Fatalf("Failed to read output: %v", err)
+	}
 	output := strings.TrimSpace(buf.String())
 
 	// Verify output

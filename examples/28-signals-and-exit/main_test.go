@@ -189,7 +189,9 @@ func TestSignalHandling(t *testing.T) {
 			// For non-terminating signals, send SIGINT after processing
 			if tt.signal != syscall.SIGINT && tt.signal != syscall.SIGTERM {
 				time.Sleep(time.Second * 2) // Give more time for signal processing
-				proc.Signal(syscall.SIGINT)
+				if err := proc.Signal(syscall.SIGINT); err != nil {
+					t.Logf("Failed to send SIGINT signal: %v", err)
+				}
 			}
 
 			// Wait for completion with timeout
@@ -430,8 +432,13 @@ func TestIntegration(t *testing.T) {
 	time.Sleep(time.Second * 2) // Give workers time to start
 
 	// Send SIGINT
-	proc, _ := os.FindProcess(os.Getpid())
-	proc.Signal(syscall.SIGINT)
+	proc, err := os.FindProcess(os.Getpid())
+	if err != nil {
+		t.Fatalf("Failed to find process: %v", err)
+	}
+	if err := proc.Signal(syscall.SIGINT); err != nil {
+		t.Logf("Failed to send SIGINT signal: %v", err)
+	}
 
 	// Wait for completion with timeout
 	select {
