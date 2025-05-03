@@ -1,0 +1,76 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage/
+
+# Go workspace file
+go.work
+
+# Dependency directories (remove if using go modules and committing vendor directory)
+vendor/
+
+# Compiled Object files, Static and Dynamic libs (remove if including binaries)
+*.o
+*.a
+
+# Folders
+_obj
+_test
+bin/
+tmp/
+
+# Temp files
+*~
+*.tmp
+*.bak
+*.log
+*.swp
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+.DS_Store
+.project
+.classpath
+.settings/
+
+# Application specific files
+# For your project's temp files and generated files
+temp.txt
+dist/
+
+# Log files
+# Uncomment the next line if you want to include example log files in version control
+# !examples/25-env-and-logging/logs/*.log
+
+# Generated files
+**/generated/
+
+# Binary files
+**/*_bin
+**/bin/
+
+# Go build results
+# Main executable - matches the directory name
+/go_by_examples
+# Example executables - matches each example's directory name
+/examples/*/main
+# Windows executables for examples
+/examples/*/main.exe
+# Executables with the same name as their directories
+/examples/*/*.exe
+/examples/*/*
+!/examples/*/*.*
+!/examples/*/README.md
+!/examples/*/LICENSE
