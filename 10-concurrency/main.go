@@ -1,20 +1,27 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"sort"
 	"sync"
 	"time"
 )
 
 // Worker represents a function that processes data from a channel
-type Worker func(id int, jobs <-chan int, results chan<- int)
+type Worker func(ctx context.Context, id int, jobs <-chan int, results chan<- int)
 
 // simpleGoroutine demonstrates basic goroutine usage
 func simpleGoroutine() {
+	var wg sync.WaitGroup
+	wg.Add(1)
+
 	go func() {
+		defer wg.Done()
 		fmt.Println("    Hello from goroutine!")
 	}()
-	time.Sleep(100 * time.Millisecond) // Wait for goroutine to finish
+
+	wg.Wait()
 }
 
 // channelCommunication demonstrates basic channel communication
@@ -33,56 +40,75 @@ func channelCommunication() {
 func bufferedChannels() {
 	ch := make(chan int, 3)
 
-	// Can send 3 values without blocking
 	ch <- 1
 	ch <- 2
 	ch <- 3
 
-	fmt.Printf("    Buffered values: %d, %d, %d\n", <-ch, <-ch, <-ch)
+	var results []int
+	for i := 0; i < 3; i++ {
+		results = append(results, <-ch)
+	}
+	sort.Ints(results)
+	fmt.Printf("    Buffered values (sorted): %v\n", results)
 }
 
 // channelSynchronization demonstrates using channels for synchronization
 func channelSynchronization() {
-	done := make(chan bool)
+	done := make(chan struct{})
 
 	go func() {
 		fmt.Println("    Working...")
 		time.Sleep(500 * time.Millisecond)
 		fmt.Println("    Done working!")
-		done <- true
+		close(done)
 	}()
 
-	<-done // Wait for goroutine to finish
+	<-done
 }
 
-// worker function for demonstrating channel directions
-func worker(id int, jobs <-chan int, results chan<- int) {
-	for job := range jobs {
-		fmt.Printf("    Worker %d processing job %d\n", id, job)
-		time.Sleep(100 * time.Millisecond)
-		results <- job * 2
+// worker function for demonstrating channel directions and context support
+func worker(ctx context.Context, id int, jobs <-chan int, results chan<- int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Printf("    Worker %d canceled\n", id)
+			return
+		case job, ok := <-jobs:
+			if !ok {
+				fmt.Printf("    Worker %d exiting\n", id)
+				return
+			}
+			fmt.Printf("    Worker %d processing job %d\n", id, job)
+			time.Sleep(100 * time.Millisecond)
+			results <- job * 2
+		}
 	}
 }
 
-// channelDirections demonstrates channel direction constraints
+// channelDirections demonstrates channel direction constraints with context and waitgroup
 func channelDirections() {
 	jobs := make(chan int, 5)
 	results := make(chan int, 5)
+	var wg sync.WaitGroup
 
-	// Start 2 workers
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
 	for w := 1; w <= 2; w++ {
-		go worker(w, jobs, results)
+		wg.Add(1)
+		go worker(ctx, w, jobs, results, &wg)
 	}
 
-	// Send jobs
 	for j := 1; j <= 5; j++ {
 		jobs <- j
 	}
 	close(jobs)
 
-	// Collect results
-	for i := 1; i <= 5; i++ {
-		result := <-results
+	wg.Wait()
+	close(results)
+
+	for result := range results {
 		fmt.Printf("    Result: %d\n", result)
 	}
 }
@@ -104,17 +130,22 @@ func waitGroupExample() {
 	fmt.Println("    All goroutines completed")
 }
 
-// selectExample demonstrates the select statement
+// selectExample demonstrates the select statement with proper synchronization
 func selectExample() {
 	ch1 := make(chan string)
 	ch2 := make(chan string)
 
+	var wg sync.WaitGroup
+	wg.Add(2)
+
 	go func() {
+		defer wg.Done()
 		time.Sleep(100 * time.Millisecond)
 		ch1 <- "Channel 1"
 	}()
 
 	go func() {
+		defer wg.Done()
 		time.Sleep(200 * time.Millisecond)
 		ch2 <- "Channel 2"
 	}()
@@ -127,6 +158,8 @@ func selectExample() {
 			fmt.Printf("    Received from ch2: %s\n", msg2)
 		}
 	}
+
+	wg.Wait()
 }
 
 func main() {
