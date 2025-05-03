@@ -60,17 +60,3 @@ dist/
 # Binary files
 **/*_bin
 **/bin/
-
-# Go build results
-# Main executable - matches the directory name
-/go_by_examples
-# Example executables - matches each example's directory name
-/examples/*/main
-# Windows executables for examples
-/examples/*/main.exe
-# Executables with the same name as their directories
-/examples/*/*.exe
-/examples/*/*
-!/examples/*/*.*
-!/examples/*/README.md
-!/examples/*/LICENSE

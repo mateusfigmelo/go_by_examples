@@ -1,0 +1,14 @@
+# Sample Configuration File
+app_name=File Utilities Example
+version=1.0.0
+debug=true
+
+# Database Settings
+db_host=localhost
+db_port=5432
+db_name=testdb
+
+# Feature Flags
+enable_logging=true
+enable_metrics=false
+enable_cache=true 
