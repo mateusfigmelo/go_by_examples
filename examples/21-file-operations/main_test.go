@@ -22,7 +22,11 @@ func TestBasicFileOperations(t *testing.T) {
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatal(err)
 	}
-	defer func() { if err := os.Chdir(oldWd); err != nil { t.Logf("Failed to restore working directory: %v", err) } }()
+	defer func() {
+		if err := os.Chdir(oldWd); err != nil {
+			t.Logf("Failed to restore working directory: %v", err)
+		}
+	}()
 
 	// Run the function
 	basicFileOperations()
@@ -55,7 +59,11 @@ func TestBufferedIO(t *testing.T) {
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatal(err)
 	}
-	defer func() { if err := os.Chdir(oldWd); err != nil { t.Logf("Failed to restore working directory: %v", err) } }()
+	defer func() {
+		if err := os.Chdir(oldWd); err != nil {
+			t.Logf("Failed to restore working directory: %v", err)
+		}
+	}()
 
 	// Run the function
 	bufferedIO()
@@ -88,7 +96,11 @@ func TestFileManipulation(t *testing.T) {
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatal(err)
 	}
-	defer func() { if err := os.Chdir(oldWd); err != nil { t.Logf("Failed to restore working directory: %v", err) } }()
+	defer func() {
+		if err := os.Chdir(oldWd); err != nil {
+			t.Logf("Failed to restore working directory: %v", err)
+		}
+	}()
 
 	// Create initial test file
 	if err := os.WriteFile("test.txt", []byte("test content"), 0644); err != nil {
@@ -130,7 +142,11 @@ func TestAdvancedFileOperations(t *testing.T) {
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatal(err)
 	}
-	defer func() { if err := os.Chdir(oldWd); err != nil { t.Logf("Failed to restore working directory: %v", err) } }()
+	defer func() {
+		if err := os.Chdir(oldWd); err != nil {
+			t.Logf("Failed to restore working directory: %v", err)
+		}
+	}()
 
 	// Run the function
 	advancedFileOperations()
@@ -156,7 +172,11 @@ func TestDirectoryOperations(t *testing.T) {
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatal(err)
 	}
-	defer func() { if err := os.Chdir(oldWd); err != nil { t.Logf("Failed to restore working directory: %v", err) } }()
+	defer func() {
+		if err := os.Chdir(oldWd); err != nil {
+			t.Logf("Failed to restore working directory: %v", err)
+		}
+	}()
 
 	// Create test directory structure
 	if err := os.MkdirAll("testdir", 0755); err != nil {
